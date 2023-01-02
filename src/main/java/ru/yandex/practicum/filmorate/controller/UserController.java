@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,10 +14,11 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private static Long currentMaxId = 1L;
+    private Long currentMaxId = 1L;
     private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Optional<User> createUser(@Valid @RequestBody User user) {
         if (user.getName() == null || user.getName().isEmpty()){
             user.setName(user.getLogin());
@@ -26,7 +28,7 @@ public class UserController {
             users.put(user.getId(),user);
             log.info("createUser {}",user);
         } else {
-            throw new ValidationException("Wrong user ID");
+            throw new ValidationException("Wrong user ID="+user.getId()+" Users="+users.toString());
         }
         return Optional.of(user);
     }
@@ -43,7 +45,7 @@ public class UserController {
             users.put(user.getId(),user);
             log.info("updateUser {}", user);
         } else {
-            throw new ValidationException("Wrong user");
+            throw new ValidationException("Wrong user userID="+user.getId());
         }
 
         return user;

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,10 +15,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private static Long currentMaxId = 1L;
-    private static Map<Long, Film> films = new HashMap<>();
+    private Long currentMaxId = 1L;
+    private final Map<Long, Film> films = new HashMap<>();
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Film addFilm(@Valid  @RequestBody Film film) {
         film.setId(currentMaxId++);
         if (!films.containsKey(film.getId())) {
@@ -35,7 +37,7 @@ public class FilmController {
             films.put(film.getId(), film);
             log.info("updateFilm {}",film);
         } else {
-            throw new ValidationException("Wrong film ID");
+            throw new ValidationException("Wrong film ID= "+film.getId()+" films= "+films.toString());
         }
         return film;
     }
