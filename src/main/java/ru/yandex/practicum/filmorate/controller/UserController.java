@@ -54,4 +54,10 @@ public class UserController {
     public Collection<User> getAll(){
         return users.values();
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(final ValidationException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

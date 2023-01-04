@@ -21,7 +21,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    @DisplayName("Create film")
+    @DisplayName("Film create")
     public void shouldAddFilm() throws Exception {
         mock.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -37,8 +37,65 @@ public class FilmControllerTest {
                 .andExpect(jsonPath("$.releaseDate").value("1984-12-03"))
                 .andExpect(jsonPath("$.duration").value(137));
     }
+
+
     @Test
-    @DisplayName("Update film")
+    @DisplayName("Film create Fail name")
+    public void CreateFilmWithFailName() throws Exception {
+        mock.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\": 2, " +
+                                "\"name\": \"\", " +
+                                "\"description\": \"Фантастический фильм по мотивам романа Фрэнка Герберта\", " +
+                                "\"releaseDate\": \"1984-12-03\"," +
+                                "\"duration\": 137}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Film create Fail description")
+    public void CreateFilmWithFailDescrition() throws Exception {
+        mock.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\": 2, " +
+                                "\"name\": \"Film name\", " +
+                                "\"description\": \"Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль." +
+                                " Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, " +
+                                "а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал " +
+                                "кандидатом Коломбани.\", " +
+                                "\"releaseDate\": \"1984-12-03\"," +
+                                "\"duration\": 137}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Film create Fail releaseDate")
+    public void CreateFilmWithFailReleaseDate() throws Exception {
+        mock.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\": 2, " +
+                                "\"name\": \"Name\", " +
+                                "\"description\": \"Description\", " +
+                                "\"releaseDate\": \"1890-03-25\"," +
+                                "\"duration\": 200}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Film create Fail duration")
+    public void CreateFilmWithFailDuration() throws Exception {
+        mock.perform(post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\": 2, " +
+                                "\"name\": \"Name\", " +
+                                "\"description\": \"Description\", " +
+                                "\"releaseDate\": \"1984-12-03\"," +
+                                "\"duration\": -200}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Film update")
     public void shouldUpdateFilm() throws Exception {
         mock.perform(post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,4 +121,16 @@ public class FilmControllerTest {
                 .andExpect(jsonPath("$.duration").value(100));
     }
 
+    @Test
+    @DisplayName("Film update unknown")
+    public void shouldUpdateFilmUnknown() throws Exception {
+        mock.perform(put("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\": 9999, " +
+                                "\"name\": \"Film Updated\", " +
+                                "\"description\": \"New film update decription\", " +
+                                "\"releaseDate\": \"1989-04-17\","  +
+                                "\"duration\": 190}"))
+                .andExpect(status().isBadRequest());
+    }
 }
