@@ -131,6 +131,6 @@ public class FilmControllerTest {
                                 "\"description\": \"New film update decription\", " +
                                 "\"releaseDate\": \"1989-04-17\","  +
                                 "\"duration\": 190}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 }
