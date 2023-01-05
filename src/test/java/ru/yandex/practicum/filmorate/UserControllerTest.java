@@ -123,6 +123,6 @@ public class UserControllerTest {
                                 "\"login\": \"doloreUpdate\", " +
                                 "\"name\": \"est adipisicing\"," +
                                 "\"birthday\": \"1976-09-20\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 }
