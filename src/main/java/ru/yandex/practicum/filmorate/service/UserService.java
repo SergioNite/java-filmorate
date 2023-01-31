@@ -59,7 +59,7 @@ public class UserService {
         friend.getFriends().remove(user);
     }
 
-    public Set<User> getFriends(Long id) {
+    public List<User> getFriends(Long id) {
         return userStorage.getFriends(id);
     }
     public List<User> getMutualFriends(Long id, Long otherId) {

@@ -67,8 +67,8 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public Set<User> getFriends(long userId) {
-        Set<User> result = new HashSet<>();
+    public List<User> getFriends(long userId) {
+        List<User> result = new ArrayList<>();
         Set<Long> friendSet = users.get(userId).getFriends();
         friendSet.forEach(j ->result.add(getUserById(j).get()));
         return result;
