@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,6 +13,8 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.*;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @RestController
@@ -36,7 +39,7 @@ public class FilmController {
     public Film updateFilm(@Valid @RequestBody Film film) {
         Optional<Film> result = filmService.updateFilm(film.getId(),film);
         if (result.isEmpty()){
-            throw new ValidationException("Не удалось обновить данные фильма "+film.getId());
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Не удалось обновить данные фильма "+film.getId());
         }
         return result.get();
     }
@@ -69,7 +72,7 @@ public class FilmController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     public Map<String, String> handleValidationException(final ValidationException e) {
         return Map.of("error", e.getMessage());
     }

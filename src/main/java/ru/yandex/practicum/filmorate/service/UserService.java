@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
@@ -26,7 +27,7 @@ public class UserService {
         return userStorage.addUser(user);
     }
     public User updateUser(long id, User user) {
-        return userStorage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Cannot find user"));
+        return userStorage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Cannot find user"));
     }
 
     public User deleteUser(@PathVariable long id) {
