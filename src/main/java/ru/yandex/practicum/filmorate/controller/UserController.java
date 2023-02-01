@@ -20,6 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
@@ -28,45 +29,32 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@Valid @RequestBody User user) {
-        if (user.getId() != null && user.getId() < 1) {
-            throw new ValidationException("createUser: Wrong user ID="+user.getId());
-        }
         return userService.createUser(user);
     }
+
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        if (user.getId() != null && user.getId() < 1) {
-            throw new ValidationException("Wrong user ID");
-        }
-        return userService.updateUser(user.getId(),user);
+        return userService.updateUser(user.getId(), user);
     }
+
     @DeleteMapping("{id}")
-    public void deleteUser(@PathVariable long id){
+    public void deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
     }
+
     @GetMapping("{id}")
-    public Optional<User> getUserById(@PathVariable Long id){
-        Optional<User> user = userService.getUserById(id);
-        if (!user.isPresent()){
-            throw new ResponseStatusException(NOT_FOUND, "Unable to find user");
-        }
-        return user;
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
+
     @GetMapping
-    public Collection<User> getAll(){
+    public Collection<User> getAll() {
         return userService.getAll();
     }
 
     @PutMapping("{id}/friends/{friendId}")
     public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        if (id < 1 || friendId < 1) {
-            throw new NotFoundException("Ошибка в ID пользователей!");
-        }
-        Optional<User> result = userService.addFriend(id,friendId);
-        if (result.isEmpty()){
-            throw new ValidationException("Системная ошибка: Данные не записаны!");
-        }
-        return result.get();
+        return userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")

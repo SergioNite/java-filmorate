@@ -17,7 +17,7 @@ public class InMemoryUserStorage implements UserStorage{
     private Long currentMaxId = 1L;
 
     @Override
-    public User addUser(User user) {
+    public Optional<User> addUser(User user) {
         if (user.getName() == null || user.getName().isEmpty()){
             user.setName(user.getLogin());
         }
@@ -26,7 +26,7 @@ public class InMemoryUserStorage implements UserStorage{
             users.put(user.getId(),user);
             log.info("createUser: {}", user);
         }
-        return users.get(user.getId());
+        return Optional.ofNullable(users.get(user.getId()));
     }
 
     @Override

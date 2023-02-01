@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -23,10 +25,20 @@ public class UserService {
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
+
     public User createUser(User user) {
-        return userStorage.addUser(user);
+        if (user.getId() != null && user.getId() < 1) {
+            throw new ValidationException("CreateUser: Wrong user ID=" + user.getId());
+        }
+        return userStorage.addUser(user).orElseThrow(
+                () -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Cannot create user")
+        );
     }
+
     public User updateUser(long id, User user) {
+        if (user.getId() != null && user.getId() < 1) {
+            throw new ValidationException("Wrong user ID");
+        }
         return userStorage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Cannot find user"));
     }
 
@@ -34,25 +46,36 @@ public class UserService {
         return userStorage.deleteUser(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Cannot find user"));
     }
 
-    public Optional<User> getUserById(long userId){
-        return userStorage.getUserById(userId);
+    public User getUserById(long userId) {
+        Optional<User> user = Optional.ofNullable(userStorage.getUserById(userId).orElseThrow(
+                () -> new ResponseStatusException(NOT_FOUND, "getUserById: Cannot find user")
+        ));
+
+        if (!user.isPresent()) {
+            throw new ResponseStatusException(NOT_FOUND, "getUserById: Unable to find user");
+        }
+        return user.get();
     }
 
-    public Collection<User> getAll(){
+    public Collection<User> getAll() {
         return userStorage.getAll();
     }
 
-    public Optional<User> addFriend(long id, long friendId){
-        User user = userStorage.getUserById(id).get();
-        User friend = userStorage.getUserById(friendId).get();
-        if (Objects.isNull(user) || Objects.isNull(friend)){
-            return Optional.empty();
+    public User addFriend(long id, long friendId) {
+        if (id < 1 || friendId < 1) {
+            throw new NotFoundException("Ошибка в ID пользователей!");
+        }
+        User user = getUserById(id);
+        User friend = getUserById(friendId);
+        if (Objects.isNull(user) || Objects.isNull(friend)) {
+            throw new ResponseStatusException(NOT_FOUND, "addFriend: Unable to find user");
         }
         user.addFriend(friend);
         friend.addFriend(user);
-        return Optional.of(user);
+        return user;
     }
-    public void deleteFriend(long id, long friendId){
+
+    public void deleteFriend(long id, long friendId) {
         User user = userStorage.getUserById(id).get();
         User friend = userStorage.getUserById(friendId).get();
         user.getFriends().remove(friend);
@@ -62,6 +85,7 @@ public class UserService {
     public List<User> getFriends(Long id) {
         return userStorage.getFriends(id);
     }
+
     public List<User> getMutualFriends(Long id, Long otherId) {
         return userStorage.getMutualFriends(id, otherId);
     }

@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@FieldDefaults(makeFinal=true, level=AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class User {
     @NonFinal
     Long id;
