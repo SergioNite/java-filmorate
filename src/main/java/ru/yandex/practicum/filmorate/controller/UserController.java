@@ -1,63 +1,76 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.*;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
 
-    private Long currentMaxId = 1L;
-    private final Map<Long, User> users = new HashMap<>();
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Optional<User> createUser(@Valid @RequestBody User user) {
-        if (user.getName() == null || user.getName().isEmpty()){
-            user.setName(user.getLogin());
-        }
-        if (user.getId() == null){
-            user.setId(currentMaxId++);
-            users.put(user.getId(),user);
-            log.info("createUser {}",user);
-        } else {
-            throw new ValidationException("Wrong user ID="+user.getId()+" Users="+users.toString());
-        }
-        return Optional.of(user);
+    public User createUser(@Valid @RequestBody User user) {
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        if (user.getId() != null && user.getId() < 1) {
-            throw new ValidationException("Wrong user ID");
-        }
-        if (users.containsKey(user.getId())){
-            if (user.getName().isEmpty()) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(),user);
-            log.info("updateUser {}", user);
-        } else {
-            throw new ValidationException("Wrong user userID="+user.getId());
-        }
-
-        return user;
+        return userService.updateUser(user.getId(), user);
     }
+
+    @DeleteMapping("{id}")
+    public void deleteUser(@PathVariable long id) {
+        userService.deleteUser(id);
+    }
+
+    @GetMapping("{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
     @GetMapping
-    public Collection<User> getAll(){
-        return users.values();
+    public Collection<User> getAll() {
+        return userService.getAll();
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("error", e.getMessage());
+    @PutMapping("{id}/friends/{friendId}")
+    public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        return userService.addFriend(id, friendId);
     }
+
+    @DeleteMapping("{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("{id}/friends")
+    public List<User> getFriends(@PathVariable Long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public List<User> getCrossFriend(@PathVariable Long id, @PathVariable Long otherId) {
+        return userService.getMutualFriends(id, otherId);
+    }
+
+
 }

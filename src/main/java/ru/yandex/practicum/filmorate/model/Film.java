@@ -9,11 +9,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @Builder
-@FieldDefaults(makeFinal=true, level=AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Film {
     @NonFinal
     Long id;
@@ -26,5 +28,17 @@ public class Film {
     LocalDate releaseDate;
     @Positive
     Integer duration;
+    Set<Long> likes = new HashSet<>();
 
+    public int getLikesCount() {
+        return likes.size();
+    }
+
+    public void addLike(Long userId) {
+        likes.add(userId);
+    }
+
+    public void deleteLike(Long userId) {
+        likes.remove(userId);
+    }
 }
