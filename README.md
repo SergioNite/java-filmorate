@@ -1,2 +1,3 @@
 # java-filmorate
-Template repository for Filmorate project.
+Test repository for Filmorate project.
+!(film.png)
