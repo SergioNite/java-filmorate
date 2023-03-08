@@ -32,7 +32,7 @@ public class GenreStorageImpl implements GenreStorage {
 
     @Override
     public Collection<Genre> findAll() {
-        return jdbcTemplate.queryForStream("select * from GENRES",
+        return jdbcTemplate.queryForStream("select * from GENRES order by GENRE_ID",
                 (rs, rowNum) -> new Genre(rs.getInt("GENRE_ID"), rs.getString("genre_name"))).collect(Collectors.toList());
 
     }

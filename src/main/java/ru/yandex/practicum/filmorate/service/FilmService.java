@@ -38,8 +38,9 @@ public class FilmService {
         if (Objects.isNull(film) || Objects.isNull(user)) {
             throw new NotFoundException("Передан некорректный ID фильма или пользователя");
         }
-        film.addLike(userId);
-        filmStorage.updateFilm(film.getId(), film);
+        //film.addLike(userId);
+        filmStorage.addLike(user,film);
+        //filmStorage.updateFilm(film.getId(), film);
         log.info("User {} set like mark to the film {}", user, film);
     }
 
@@ -52,8 +53,9 @@ public class FilmService {
         if (Objects.isNull(film) || Objects.isNull(user)) {
             throw new NotFoundException("Передан некорректный ID фильма или пользователя");
         }
-        film.deleteLike(userId);
-        filmStorage.updateFilm(film.getId(), film);
+        //film.deleteLike(userId);
+        filmStorage.deleteLike(user,film);
+        //filmStorage.updateFilm(film.getId(), film);
         log.info("User {} delete like from the film {}", user, film);
     }
 

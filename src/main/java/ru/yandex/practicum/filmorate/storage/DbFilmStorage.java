@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -147,6 +148,8 @@ public class DbFilmStorage implements FilmStorage{
 
     @Override
     public Collection<Film> getAll() {
+        Collection<Film> result = new ArrayList<>();
+
         String sqlQuery = "SELECT film_id, " +
                 "f.film_name, " +
                 "f.film_description, " +
@@ -155,7 +158,29 @@ public class DbFilmStorage implements FilmStorage{
                 "f.film_mpa_id,  " +
                 "m.MPAA_NAME "+
                 "FROM films AS f LEFT JOIN MPAA M on f.FILM_MPA_ID = M.MPAA_ID";
-        return jdbcTemplate.query(sqlQuery, new MapRowToFilm());
+
+        SqlRowSet filmsRowSet = jdbcTemplate.queryForRowSet(sqlQuery);
+        while (filmsRowSet.next()){
+            Film film = new Film();
+            film.setId(filmsRowSet.getLong("film_id"));
+            film.setName(filmsRowSet.getString("film_name"));
+            film.setDescription(filmsRowSet.getString("film_description"));
+            film.setReleaseDate(filmsRowSet.getDate("film_release_date").toLocalDate());
+            film.setDuration(filmsRowSet.getInt("film_duration"));
+            film.setMpa(new Mpaa(filmsRowSet.getInt("film_mpa_id"), filmsRowSet.getString("MPAA_NAME")));
+
+            String sqlQueryGenres = "SELECT g.genre_id, g.genre_name FROM film_genres AS fg " +
+                    "JOIN genres AS g ON g.genre_id = fg.genre_id WHERE fg.film_id = ?";
+            List<Genre> genres = jdbcTemplate.query(sqlQueryGenres, new MapRowToGenre(), film.getId());
+
+            if (genres.size() > 0) {
+                film.setGenres(new HashSet<>());
+                genres.forEach(g -> film.getGenres().add(g));
+            }
+            result.add(film);
+
+        }
+        return result;
     }
 
     @Override
