@@ -39,7 +39,7 @@ public class UserService {
         if (user.getId() != null && user.getId() < 1) {
             throw new ValidationException("Wrong user ID");
         }
-        return userStorage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Cannot find user"));
+        return userStorage.updateUser(id, user).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Cannot find user"));
     }
 
     public User deleteUser(@PathVariable long id) {
@@ -61,25 +61,15 @@ public class UserService {
         return userStorage.getAll();
     }
 
-    public User addFriend(long id, long friendId) {
+    public List<User> addFriend(long id, long friendId) {
         if (id < 1 || friendId < 1) {
             throw new NotFoundException("Ошибка в ID пользователей!");
         }
-        User user = getUserById(id);
-        User friend = getUserById(friendId);
-        if (Objects.isNull(user) || Objects.isNull(friend)) {
-            throw new ResponseStatusException(NOT_FOUND, "addFriend: Unable to find user");
-        }
-        user.addFriend(friend);
-        friend.addFriend(user);
-        return user;
+        return userStorage.addFriend(id,friendId);
     }
 
-    public void deleteFriend(long id, long friendId) {
-        User user = userStorage.getUserById(id).get();
-        User friend = userStorage.getUserById(friendId).get();
-        user.getFriends().remove(friend);
-        friend.getFriends().remove(user);
+    public List<User> deleteFriend(long id, long friendId) {
+        return userStorage.deleteFriend(id,friendId);
     }
 
     public List<User> getFriends(Long id) {

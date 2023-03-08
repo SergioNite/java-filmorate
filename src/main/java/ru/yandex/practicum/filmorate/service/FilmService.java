@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -76,7 +77,7 @@ public class FilmService {
 
     public Film updateFilm(long filmId, Film film) {
         return filmStorage.updateFilm(filmId, film).orElseThrow(
-                () -> new ResponseStatusException(INTERNAL_SERVER_ERROR, "Не удалось обновить данные фильма " + film.getId())
+                () -> new ResponseStatusException(NOT_FOUND, "Не удалось обновить данные фильма " + film.getId())
         );
     }
 
