@@ -29,6 +29,7 @@ public class FilmControllerTest {
                                 "\"name\": \"Дюна\", " +
                                 "\"description\": \"Фантастический фильм по мотивам романа Фрэнка Герберта\", " +
                                 "\"releaseDate\": \"1984-12-03\"," +
+                                "\"mpa\": { \"id\": 1},"+
                                 "\"duration\": 137}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").hasJsonPath())
@@ -103,6 +104,7 @@ public class FilmControllerTest {
                         "\"name\": \"Заголовок\", " +
                         "\"description\": \"Описание\", " +
                         "\"releaseDate\": \"1990-01-01\"," +
+                        "\"mpa\": { \"id\": 1},"+
                         "\"duration\": 100}"));
 
 
@@ -112,6 +114,7 @@ public class FilmControllerTest {
                                 "\"name\": \"test\", " +
                                 "\"description\": \"test\", " +
                                 "\"releaseDate\": \"2023-01-01\","  +
+                                "\"mpa\": { \"id\": 1},"+
                                 "\"duration\": 100}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -130,7 +133,8 @@ public class FilmControllerTest {
                                 "\"name\": \"Film Updated\", " +
                                 "\"description\": \"New film update decription\", " +
                                 "\"releaseDate\": \"1989-04-17\","  +
+                                "\"mpa\": { \"id\": 1},"+
                                 "\"duration\": 190}"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }
