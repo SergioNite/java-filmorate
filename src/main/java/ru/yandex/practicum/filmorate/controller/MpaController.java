@@ -5,9 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpaa;
-import ru.yandex.practicum.filmorate.service.MpaService;
+import ru.yandex.practicum.filmorate.service.MpaServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +16,10 @@ import java.util.Optional;
 @RequestMapping("/mpa")
 public class MpaController {
 
-    private final MpaService mpaService;
+    private final MpaServiceImpl mpaService;
 
     @Autowired
-    public MpaController(MpaService mpaService) {
+    public MpaController(MpaServiceImpl mpaService) {
         this.mpaService = mpaService;
     }
 

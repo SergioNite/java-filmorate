@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.mapper.MapRowToUser;
 
@@ -100,7 +101,7 @@ public class DbUserStorage implements UserStorage{
         Optional<User> first = getUserById(id);
         Optional<User> second = getUserById(friendId);
         if (first.isEmpty() || second.isEmpty()){
-            return new ArrayList<>();
+            throw new NotFoundException("Не найден пользователь!");
         }
         String sqlQuery = "INSERT INTO FRIENDS VALUES (?, ?, true)";
         jdbcTemplate.update(sqlQuery, first.get().getId(), second.get().getId());

@@ -19,8 +19,6 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Film {
     @NonFinal
@@ -48,6 +46,10 @@ public class Film {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     @JsonProperty("mpa")
     private Mpaa mpa;
+
+    public Film() {
+    }
+
     public int getLikesCount() {
         return likes.size();
     }
