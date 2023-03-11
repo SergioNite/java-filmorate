@@ -19,14 +19,17 @@ public class User {
     @NonFinal
     Long id;
     @Email
+    @NonFinal
     @NotBlank
     String email;
     @NotBlank
+    @NonFinal
     @Pattern(regexp = "\\S+")
     String login;
     @NonFinal
     String name;
     @PastOrPresent
+    @NonFinal
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     LocalDate birthday;
     @NonFinal

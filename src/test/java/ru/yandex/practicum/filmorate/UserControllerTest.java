@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = FilmorateApplication.class)
 @AutoConfigureMockMvc
 public class UserControllerTest {
     private final MockMvc mock;
-
     @Autowired
     public UserControllerTest(MockMvc mock) {
         this.mock = mock;
@@ -24,6 +25,8 @@ public class UserControllerTest {
     @Test
     @DisplayName("Create user")
     public void shouldAddUser() throws Exception {
+        mock.perform(delete("/users/1"));
+        mock.perform(delete("/users/2"));
         mock.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"test@user.ru\", " +
@@ -45,6 +48,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"friend@common.ru\", " +
                                 "\"login\": \"common\", " +
+                                "\"name\": \"Nick Name\","+
                                 "\"birthday\": \"2000-08-20\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").hasJsonPath())
@@ -123,6 +127,6 @@ public class UserControllerTest {
                                 "\"login\": \"doloreUpdate\", " +
                                 "\"name\": \"est adipisicing\"," +
                                 "\"birthday\": \"1976-09-20\"}"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }
